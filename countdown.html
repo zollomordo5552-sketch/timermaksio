@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oddanie długu</title>
+  <meta property="og:title" content="⏳ Oddanie długu za:">
+  <meta property="og:description" content="Odliczanie trwa...">
+  <meta property="og:type" content="website">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Courier New', monospace;
+    }
+    .container {
+      text-align: center;
+      padding: 60px 80px;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      background: #111;
+      box-shadow: 0 0 60px rgba(85, 0, 255, 0.15);
+    }
+    .label {
+      color: #888;
+      font-size: 18px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .timer {
+      font-size: 72px;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 6px;
+      text-shadow: 0 0 30px rgba(85, 0, 255, 0.8);
+    }
+    .timer.warning { color: #ff6600; text-shadow: 0 0 30px rgba(255, 100, 0, 0.8); }
+    .timer.danger  { color: #ff0000; text-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+    .timer.done    { color: #ff0000; animation: blink 0.5s infinite; }
+    .subtitle {
+      color: #444;
+      font-size: 13px;
+      margin-top: 20px;
+      letter-spacing: 2px;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="label">Oddanie długu za:</div>
+    <div class="timer" id="timer">obliczanie...</div>
+    <div class="subtitle" id="subtitle">odliczanie aktywne</div>
+  </div>
+
+  <script>
+    // Ustaw tutaj datę końca (rok, miesiąc-1, dzień, godzina, minuta, sekunda)
+    const END = new Date(2026, 6, 6, 20, 16, 0).getTime(); // 6 lipca 2026 20:16
+
+    const timer = document.getElementById('timer');
+    const subtitle = document.getElementById('subtitle');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function update() {
+      const now = Date.now();
+      const diff = END - now;
+
+      if (diff <= 0) {
+        timer.textContent = '00:00:00:00';
+        timer.className = 'timer done';
+        subtitle.textContent = 'czas minął';
+        return;
+      }
+
+      const days    = Math.floor(diff / 86400000);
+      const hours   = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+
+      timer.textContent = `${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+      if (diff < 3600000) {
+        timer.className = 'timer danger';
+        subtitle.textContent = 'zostało mniej niż godzina!';
+      } else if (diff < 86400000) {
+        timer.className = 'timer warning';
+        subtitle.textContent = 'zostało mniej niż doba';
+      } else {
+        timer.className = 'timer';
+        subtitle.textContent = 'odliczanie aktywne';
+      }
+    }
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
